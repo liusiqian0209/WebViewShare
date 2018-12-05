@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txt_message_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="#000000"
+        android:textSize="17sp"/>
+
+    <EditText
+        android:id="@+id/edit_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@null"
+        android:textColor="#333333"
+        android:hint="Enter result here"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/txt_ok_prompt"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:layout_marginLeft="20dp"
+            android:textColor="#000000"
+            android:background="#dddddd"
+            android:text="OK"/>
+
+        <TextView
+            android:id="@+id/txt_cancel_prompt"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:layout_gravity="right"
+            android:layout_marginRight="20dp"
+            android:textColor="#000000"
+            android:background="#dddddd"
+            android:text="Cancel"/>
+    </FrameLayout>
+
+</LinearLayout>

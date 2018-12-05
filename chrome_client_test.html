@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebChromeClient测试title</title>
+
+    <style type="text/css">
+        h2 {
+            color: #cccc00;
+        }
+
+        .text {
+            font-size: 20px;
+            padding: 5px;
+        }
+
+        input {
+            margin-left: 15px;
+            font-size: 20px;
+            color: #00F;
+            width: 180px;
+        }
+
+        .btn {
+            font-size: 20px;
+            padding: 5px 20px;
+            margin-left: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>测试页面</h2>
+    <span class="text">message:</span><input id="inputmsg" value="This is a Message" placeholder="input here">
+
+    <div><span class="text" id="msg"></span></div>
+
+    <div>
+        <button class="btn" onclick="onAlert()">Alert</button>
+        <button class="btn" onclick="onConfirm()">Confirm</button>
+        <button class="btn" onclick="onPrompt()">Prompt</button>
+        <button class="btn" onclick="onReqLocation()">请求位置</button>
+    </div>
+
+
+    <script type="text/javascript" >
+
+        function onAlert() {
+            alert(getMsg());
+        }
+
+        function onConfirm() {
+            var res = confirm(getMsg());
+            res = "confirm result:" + res;
+            document.getElementById("msg").innerHTML = res;
+        }
+
+        function onPrompt() {
+            var res = prompt(getMsg(), "默认填充的结果");
+            res = "prompt result:" + res;
+            document.getElementById("msg").innerHTML = res;
+        }
+        
+        function onReqLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var result = "Latitude = " +position.coords.latitude + "    Longitude = " + position.coords.longitude;
+                    document.getElementById("msg").innerHTML = result;
+                }, function (error) {
+                    var result;
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            result = "User denied the request for Geolocation.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            result = "Location information is unavailable.";
+                            break;
+                        case error.TIMEOUT:
+                            result = "The request to get user location timed out.";
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            result = "An unknown error occurred.";
+                            break;
+                    }
+                    document.getElementById("msg").innerHTML = "request Location error:"+result;
+                });
+            }
+        }
+
+        function getMsg() {
+            return document.getElementById("inputmsg").getAttribute("value");
+        }
+
+        window.onbeforeunload = function (event) {
+            event = event || window.event;
+
+            if (event) {
+                event.returnValue = "test--onbeforeunload";
+            }
+
+            return "test--onbeforeunload";
+        };
+
+
+    </script>
+</body>
+</html>

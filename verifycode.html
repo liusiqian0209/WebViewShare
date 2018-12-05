@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+    <title>verify</title>
+    <style type="text/css">
+        .btnVerify {
+            margin: 5px;
+            padding: 10px;
+            width: 100px;
+            display: inline;
+        }
+
+        #remotetext {
+            height: 30px;
+            color: #F00;
+            font-size: 1.5em;
+            display: block;
+        }
+
+        a {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!--点击此元素会自动激活验证码-->
+<!--id : 元素的id(必须)-->
+<!--data-appid : AppID(必须)-->
+<!--data-cbfn : 回调函数名(必须)-->
+<button id="TencentCaptcha" class="btnVerify" data-appid="xxxxxxxx" data-cbfn="callback">验证</button>
+
+<button id="clear" class="btnVerify" onclick="clearTicket()">重置Ticket</button>
+
+<a id="jump" href="myscheme://target/base?param1=abc&param2=45678">测试跳转</a>
+
+<span id="remotetext"></span>
+
+
+<script type="text/javascript" src="./js/native_interface.js"></script>
+<script type="text/javascript">
+
+    function callback(res) {
+//        console.log(res);
+        //res（未通过验证）= {ret:1,ticket:null}
+        //res（验证成功） = {ret:0,ticket:"String",randstr:"String"}
+        if (res.ret === 0) {
+//            alert(res.ticket)   //票据
+            if (launcher && launcher.setToken) {
+                launcher.setToken(res.ticket);
+            }
+        }
+    }
+
+    (function () {
+        var link = document.getElementById('jump');
+        if (window.launcher) {
+            link.style.display = 'none';
+        } else {
+            link.style.display = 'inline';
+        }
+    })();
+
+
+    function clearTicket() {
+        if (window) {
+            window.location.href = "liusiqian://clearTicket?def=已清理"
+        }
+    }
+
+
+</script>
+</body>
+</html>
