@@ -95,10 +95,23 @@ public class MyWebChromeClient extends WebChromeClient {
     }
 
     @Override
-    public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+    public void onGeolocationPermissionsShowPrompt(final String origin, final GeolocationPermissions.Callback callback) {
         Utils.log("onGeolocationPermissionsShowPrompt:" + origin);
+        OnGeoLocationReqCompleteListener listener = new OnGeoLocationReqCompleteListener() {
+            @Override
+            public void onGeoLocationReqComplete(boolean succ) {
+                Utils.log("onGeoLocationReqComplete -- " + succ);
+                callback.invoke(origin, succ, false);
+            }
+        };
+        if (iBridgeWR != null && iBridgeWR.get() != null) {
+            iBridgeWR.get().requestLocation(listener);
+        }
+    }
 
-        super.onGeolocationPermissionsShowPrompt(origin, callback);
+    @Override
+    public void onGeolocationPermissionsHidePrompt() {
+        Utils.log("onGeolocationPermissionsHidePrompt");
     }
 
     @Override
@@ -106,7 +119,4 @@ public class MyWebChromeClient extends WebChromeClient {
         return super.onConsoleMessage(consoleMessage);
     }
 
-    private boolean checkValid() {
-        return iBridgeWR != null && iBridgeWR.get() != null;
-    }
 }

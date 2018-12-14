@@ -60,15 +60,17 @@
             res = "prompt result:" + res;
             document.getElementById("msg").innerHTML = res;
         }
-        
+
         function onReqLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var result = "Latitude = " +position.coords.latitude + "    Longitude = " + position.coords.longitude;
+                navigator.geolocation.watchPosition(function (position) {
+                    console.log("getCurrentPosition success!");
+                    var result = "Latitude = " + position.coords.latitude + "    Longitude = " + position.coords.longitude;
                     document.getElementById("msg").innerHTML = result;
                 }, function (error) {
                     var result;
-                    switch(error.code) {
+                    console.log("getCurrentPosition error!");
+                    switch (error.code) {
                         case error.PERMISSION_DENIED:
                             result = "User denied the request for Geolocation.";
                             break;
@@ -82,7 +84,11 @@
                             result = "An unknown error occurred.";
                             break;
                     }
-                    document.getElementById("msg").innerHTML = "request Location error:"+result;
+                    document.getElementById("msg").innerHTML = "request Location error:" + result;
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 3000,
+                    maximumAge: 3000
                 });
             }
         }
