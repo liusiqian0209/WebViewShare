@@ -2,6 +2,7 @@ package cn.liusiqian.webviewdemo.web;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JsPromptResult;
@@ -116,6 +117,24 @@ public class MyWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+        String sourceId = consoleMessage.sourceId();
+        int line = consoleMessage.lineNumber();
+        String msg = consoleMessage.message();
+        String tag = sourceId + " at line:" + line;
+        switch (consoleMessage.messageLevel()) {
+            case TIP:
+                Log.d(tag,msg);
+                break;
+            case LOG:
+                Log.i(tag, msg);
+                break;
+            case WARNING:
+                Log.w(tag, msg);
+                break;
+            case ERROR:
+                Log.e(tag, msg);
+                break;
+        }
         return super.onConsoleMessage(consoleMessage);
     }
 

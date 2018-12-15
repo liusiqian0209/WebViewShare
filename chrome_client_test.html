@@ -27,6 +27,10 @@
             margin-left: 10px;
             margin-top: 20px;
         }
+        img {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -40,7 +44,9 @@
         <button class="btn" onclick="onConfirm()">Confirm</button>
         <button class="btn" onclick="onPrompt()">Prompt</button>
         <button class="btn" onclick="onReqLocation()">请求位置</button>
+        <button class="btn" onclick="onPrintLog()">输出Log</button>
     </div>
+    <img src="http://192.168.10.131:3000/pics/camera.jpg" width="220" height="220">
 
 
     <script type="text/javascript" >
@@ -63,7 +69,7 @@
 
         function onReqLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(function (position) {
+                navigator.geolocation.getCurrentPosition(function (position) {
                     console.log("getCurrentPosition success!");
                     var result = "Latitude = " + position.coords.latitude + "    Longitude = " + position.coords.longitude;
                     document.getElementById("msg").innerHTML = result;
@@ -91,6 +97,13 @@
                     maximumAge: 3000
                 });
             }
+        }
+        function onPrintLog() {
+            console.debug("console.debug");
+            console.log("console.log");
+            console.info("console.info");
+            console.warn("console.warn");
+            console.error("console.error");
         }
 
         function getMsg() {

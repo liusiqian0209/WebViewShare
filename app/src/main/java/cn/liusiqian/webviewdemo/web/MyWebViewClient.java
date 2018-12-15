@@ -17,7 +17,7 @@ import cn.liusiqian.webviewdemo.utils.Utils;
 /**
  * Created by liusiqian on 2018/11/30.
  */
-public class MyWebViewClient extends WebViewClient {
+public class MyWebViewClient extends BaseWebViewClient {
     private WeakReference<IBridgeScheme> ibridgeWR;
 
     public MyWebViewClient(IBridgeScheme bridge) {

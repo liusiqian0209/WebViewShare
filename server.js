@@ -4,7 +4,7 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-const hostname = '192.168.20.187';
+const hostname = '192.168.10.131';
 const httpPort = 3000;
 const httpsPort = 3001;
 
@@ -14,7 +14,7 @@ const options = {
 }
 
 const httpServer = http.createServer((req, res) => {
-  log('received request: ' + req.url);
+  log('HTTP server -- received request: ' + req.url);
   const parsedUrl = url.parse(req.url, true, true);
 
   process(parsedUrl, res);
@@ -26,7 +26,7 @@ httpServer.listen(httpPort, hostname, () => {
 });
 
 const httpsServer = https.createServer(options, function(req, res) {
-  log('received request: ' + req.url);
+  log('HTTPS server -- received request: ' + req.url);
   const parsedUrl = url.parse(req.url, true, true);
 
   process(parsedUrl, res);
