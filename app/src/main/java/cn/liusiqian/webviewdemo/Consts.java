@@ -13,6 +13,7 @@ public class Consts {
     public static final String HOST = HTTPS_HOST;
     public static final String VERIFY_CODE_PATH = "verifycode.html";
     public static final String CHROME_CLIENT_PATH = "chrome_client_test.html";
+    public static final String ARTICLE_PATH = "article.html";
 
     public static final String JS_BRIDGE_SCHEME = "liusiqian";
     public static final String JS_BRIDGE_ACTION_CLEAR_TICKET = "clearTicket";

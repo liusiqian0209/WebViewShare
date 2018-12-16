@@ -2,15 +2,14 @@ package cn.liusiqian.webviewdemo.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -67,6 +66,13 @@ public class ChromeClientTestActivity extends Activity implements IChromeClientB
         });
 
         webView.loadUrl( Utils.getUrl(Consts.CHROME_CLIENT_PATH) );
+
+        findViewById(R.id.txt_next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(v.getContext(), ArticleActivity.class));
+            }
+        });
     }
 
     @Override
