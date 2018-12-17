@@ -26,7 +26,6 @@ import okhttp3.Response;
  */
 public class ImageCachedWebViewClient extends BaseWebViewClient {
 
-    private LruCache<String, String> lruCache = new LruCache<>(4);
 
     public ImageCachedWebViewClient() {
     }
