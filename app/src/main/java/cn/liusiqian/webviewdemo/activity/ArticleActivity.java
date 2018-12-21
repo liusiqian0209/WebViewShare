@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,6 +37,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.schedulers.IoScheduler;
+import okhttp3.Call;
 import okhttp3.Response;
 
 /**
@@ -69,110 +71,16 @@ public class ArticleActivity extends Activity{
     }
 
     private void initWidgets() {
+
+        View reqView = findViewById(R.id.txt_call);
+        reqView.setVisibility(View.VISIBLE);
+        reqView.setOnClickListener(ocl);
+
         webView = findViewById(R.id.webview);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new ImageCachedWebViewClient());
 
-        webView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                final WebView.HitTestResult result = webView.getHitTestResult();
-                if (result.getType() == WebView.HitTestResult.IMAGE_TYPE ||
-                        result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-                    new AlertDialog.Builder(ArticleActivity.this)
-                            .setItems(new String[]{"保存图片", "分享图片"}, (dialog, which) -> {
-                                final String picUrl = result.getExtra();//获取图片
-                                if (!TextUtils.isEmpty(picUrl)) {
-                                    final Uri uri = Uri.parse(picUrl);
-                                    if (uri != null) {
-                                        switch (which) {
-                                            case 0:
-                                                //保存图片到相册
-                                                Observable.create(new ObservableOnSubscribe<Boolean>() {
-                                                    @Override
-                                                    public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
-
-                                                        Response response = OkHttpUtils.get().url(picUrl).build().execute();
-                                                        if (response != null && response.body() != null) {
-                                                            File file = FileUtils.parseImageFile(response, Utils.getDownloadFolder(), uri.getLastPathSegment());
-                                                            if (file.exists()) {
-                                                                emitter.onNext(true);
-                                                                emitter.onComplete();
-                                                            } else {
-                                                                emitter.onError(new RuntimeException("response error!"));
-                                                            }
-                                                        } else {
-                                                            emitter.onError(new RuntimeException("response error!"));
-                                                        }
-                                                    }
-                                                }).subscribeOn(new IoScheduler())
-                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                        .subscribe(new Consumer<Boolean>() {
-                                                            @Override
-                                                            public void accept(Boolean value) throws Exception {
-                                                                Toast.makeText(ArticleActivity.this, "已保存", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        }, new Consumer<Throwable>() {
-                                                            @Override
-                                                            public void accept(Throwable throwable) throws Exception {
-                                                                Toast.makeText(ArticleActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
-                                                break;
-                                            case 1:
-                                                // 分享图片
-                                                Observable.create(new ObservableOnSubscribe<Bitmap>() {
-                                                    @Override
-                                                    public void subscribe(ObservableEmitter<Bitmap> emitter) throws Exception {
-
-                                                        Response response = OkHttpUtils.get().url(picUrl).build().execute();
-                                                        if (response != null && response.body() != null) {
-                                                            File file = FileUtils.parseImageFile(response, Utils.getDownloadFolder(), uri.getLastPathSegment());
-                                                            if (file.exists()) {
-                                                                emitter.onNext(BitmapFactory.decodeFile(file.getAbsolutePath()));
-                                                                emitter.onComplete();
-                                                            } else {
-                                                                emitter.onError(new RuntimeException("response error!"));
-                                                            }
-                                                        } else {
-                                                            emitter.onError(new RuntimeException("response error!"));
-                                                        }
-                                                    }
-                                                }).subscribeOn(new IoScheduler())
-                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                        .subscribe(new Consumer<Bitmap>() {
-                                                            @Override
-                                                            public void accept(Bitmap bitmap) throws Exception {
-                                                                try {
-                                                                    Intent intent = new Intent(Intent.ACTION_SEND);
-                                                                    intent.setType("image/*");
-                                                                    intent.putExtra(Intent.EXTRA_STREAM, getImageUri(ArticleActivity.this, bitmap));
-                                                                    startActivity(Intent.createChooser(intent, "分享图片"));
-                                                                } catch (Exception e) {
-                                                                    e.printStackTrace();
-                                                                    Toast.makeText(ArticleActivity.this, "分享失败", Toast.LENGTH_SHORT).show();
-                                                                }
-                                                            }
-                                                        }, new Consumer<Throwable>() {
-                                                            @Override
-                                                            public void accept(Throwable throwable) throws Exception {
-                                                                throwable.printStackTrace();
-                                                                Toast.makeText(ArticleActivity.this, "分享失败", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
-                                                break;
-                                        }
-                                    }
-                                }
-
-                            })
-                            .show();
-                    return true;
-                }
-
-                return false;
-            }
-        });
+        webView.setOnLongClickListener(olcl);
     }
 
     @Override
@@ -197,5 +105,129 @@ public class ArticleActivity extends Activity{
         String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
         return Uri.parse(path);
     }
+
+    private View.OnClickListener ocl = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            OkHttpUtils.get().url(Utils.getHttpUrl(Consts.JSON_TEST_PATH))
+                    .addParams("id","1125")
+                    .addParams("name", "liusiqian")
+                    .build()
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+                            Toast.makeText(ArticleActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            if (response != null) {
+                                Toast.makeText(ArticleActivity.this, response, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+        }
+    };
+
+    private View.OnLongClickListener olcl = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            final WebView.HitTestResult result = webView.getHitTestResult();
+            if (result.getType() == WebView.HitTestResult.IMAGE_TYPE ||
+                    result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+                new AlertDialog.Builder(ArticleActivity.this)
+                        .setItems(new String[]{"保存图片", "分享图片"}, (dialog, which) -> {
+                            final String picUrl = result.getExtra();//获取图片
+                            if (!TextUtils.isEmpty(picUrl)) {
+                                final Uri uri = Uri.parse(picUrl);
+                                if (uri != null) {
+                                    switch (which) {
+                                        case 0:
+                                            //保存图片到相册
+                                            Observable.create(new ObservableOnSubscribe<Boolean>() {
+                                                @Override
+                                                public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
+
+                                                    Response response = OkHttpUtils.get().url(picUrl).build().execute();
+                                                    if (response != null && response.body() != null) {
+                                                        File file = FileUtils.parseImageFile(response, Utils.getDownloadFolder(), uri.getLastPathSegment());
+                                                        if (file.exists()) {
+                                                            emitter.onNext(true);
+                                                            emitter.onComplete();
+                                                        } else {
+                                                            emitter.onError(new RuntimeException("response error!"));
+                                                        }
+                                                    } else {
+                                                        emitter.onError(new RuntimeException("response error!"));
+                                                    }
+                                                }
+                                            }).subscribeOn(new IoScheduler())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(new Consumer<Boolean>() {
+                                                        @Override
+                                                        public void accept(Boolean value) throws Exception {
+                                                            Toast.makeText(ArticleActivity.this, "已保存", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }, new Consumer<Throwable>() {
+                                                        @Override
+                                                        public void accept(Throwable throwable) throws Exception {
+                                                            Toast.makeText(ArticleActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                            break;
+                                        case 1:
+                                            // 分享图片
+                                            Observable.create(new ObservableOnSubscribe<Bitmap>() {
+                                                @Override
+                                                public void subscribe(ObservableEmitter<Bitmap> emitter) throws Exception {
+
+                                                    Response response = OkHttpUtils.get().url(picUrl).build().execute();
+                                                    if (response != null && response.body() != null) {
+                                                        File file = FileUtils.parseImageFile(response, Utils.getDownloadFolder(), uri.getLastPathSegment());
+                                                        if (file.exists()) {
+                                                            emitter.onNext(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                                                            emitter.onComplete();
+                                                        } else {
+                                                            emitter.onError(new RuntimeException("response error!"));
+                                                        }
+                                                    } else {
+                                                        emitter.onError(new RuntimeException("response error!"));
+                                                    }
+                                                }
+                                            }).subscribeOn(new IoScheduler())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(new Consumer<Bitmap>() {
+                                                        @Override
+                                                        public void accept(Bitmap bitmap) throws Exception {
+                                                            try {
+                                                                Intent intent = new Intent(Intent.ACTION_SEND);
+                                                                intent.setType("image/*");
+                                                                intent.putExtra(Intent.EXTRA_STREAM, getImageUri(ArticleActivity.this, bitmap));
+                                                                startActivity(Intent.createChooser(intent, "分享图片"));
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                                Toast.makeText(ArticleActivity.this, "分享失败", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    }, new Consumer<Throwable>() {
+                                                        @Override
+                                                        public void accept(Throwable throwable) throws Exception {
+                                                            throwable.printStackTrace();
+                                                            Toast.makeText(ArticleActivity.this, "分享失败", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                            break;
+                                    }
+                                }
+                            }
+
+                        })
+                        .show();
+                return true;
+            }
+
+            return false;
+        }
+    };
 
 }
