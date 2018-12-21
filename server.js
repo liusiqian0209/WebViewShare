@@ -38,8 +38,17 @@ httpsServer.listen(httpsPort, hostname, () => {
 
 function process ( parsedUrl, res ){
   var filePath = path.join(__dirname, parsedUrl.pathname);
+  
+  var query = parsedUrl.query;
+  
   if( fs.existsSync(filePath) && parsedUrl.pathname != "/") {
     var fileContent = fs.readFileSync(filePath);
+
+    if( filePath.endsWith('.json') ) {
+      var obj = JSON.parse(fileContent);
+      obj.params = query;
+      fileContent = JSON.stringify(obj);
+    }
 
     res.statusCode = 200;
     res.write(fileContent);
