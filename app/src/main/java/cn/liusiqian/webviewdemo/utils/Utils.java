@@ -37,6 +37,18 @@ public class Utils {
         return null;
     }
 
+    public static File getDownloadFolder() {
+        File root = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "webviewdemo");
+        if (root.isDirectory() || root.mkdirs()) {
+            File temp = new File(root, "download");
+            if (temp.isDirectory() || temp.mkdirs()) {
+                hideFromMediaScanner(temp);
+            }
+            return temp;
+        }
+        return null;
+    }
+
     private static void hideFromMediaScanner(File root) {
         File file = new File(root, ".nomedia");
         if (!file.exists() || !file.isFile()) {

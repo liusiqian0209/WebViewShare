@@ -7,7 +7,9 @@ import android.util.LruCache;
  */
 public class GlobalCache {
 
-    private LruCache<String, String> lruCache;      //Key url, Value localPath
+    private LruCache<String, String> picCache;      //Key url, Value localPath
+
+    private LruCache<String, Integer> scrollCache;    //key url, Value scrollY
 
     private static GlobalCache sInstance;
 
@@ -23,14 +25,26 @@ public class GlobalCache {
     }
 
     private GlobalCache() {
-        lruCache = new LruCache<>(12);
+        picCache = new LruCache<>(12);
+        scrollCache = new LruCache<>(6);
     }
 
-    public void put(String url, String absPath) {
-        lruCache.put(url, absPath);
+    public void putPic(String url, String absPath) {
+        picCache.put(url, absPath);
     }
 
-    public String get(String url) {
-        return lruCache.get(url);
+    public String getPic(String url) {
+        return picCache.get(url);
+    }
+
+    public void putScrollPos(String url, int scroll) {
+        scrollCache.put(url, scroll);
+    }
+
+    public int getScrollPos(String url) {
+        if (scrollCache.get(url) != null) {
+            return scrollCache.get(url);
+        }
+        return 0;
     }
 }

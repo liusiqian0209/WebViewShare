@@ -1,9 +1,14 @@
 package cn.liusiqian.webviewdemo.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Response;
 
 /**
  * Created by liusiqian on 2018/12/17.
@@ -61,5 +66,41 @@ public class FileUtils {
             builder.append(hv);
         }
         return builder.toString();
+    }
+
+    public static File parseImageFile(Response response, File directory, String fileName) throws IOException {
+        InputStream is = null;
+        byte[] buf = new byte[2048];
+        int len = 0;
+        FileOutputStream fos = null;
+        try {
+            is = response.body().byteStream();
+            final long total = response.body().contentLength();
+
+            long sum = 0;
+
+            if (directory != null && !directory.exists()) {
+                directory.mkdirs();
+            }
+            File file = new File(directory, fileName);
+            fos = new FileOutputStream(file);
+            while ((len = is.read(buf)) != -1) {
+                sum += len;
+                fos.write(buf, 0, len);
+            }
+            fos.flush();
+
+            return file;
+
+        } finally {
+            response.body().close();
+            if (is != null) {
+                is.close();
+            }
+            if (fos != null) {
+                fos.close();
+            }
+
+        }
     }
 }

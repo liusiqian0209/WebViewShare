@@ -3,7 +3,6 @@ package cn.liusiqian.webviewdemo.web;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.LruCache;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -12,7 +11,6 @@ import com.zhy.http.okhttp.OkHttpUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -39,7 +37,7 @@ public class ImageCachedWebViewClient extends BaseWebViewClient {
                 Utils.log("shouldInterceptRequest uri = " + uri);
                 try {
                     //get from cache
-                    String absPath = GlobalCache.getInstance().get(uri.toString());
+                    String absPath = GlobalCache.getInstance().getPic(uri.toString());
                     File file = null;
                     if (TextUtils.isEmpty(absPath)) {
                         //get from local
@@ -49,7 +47,7 @@ public class ImageCachedWebViewClient extends BaseWebViewClient {
                             //get from remote
                             Response response = OkHttpUtils.get().url(uri.toString()).build().execute();
                             if (response != null && response.body() != null) {
-                                file = parseImageFile(response, Utils.getImageFolder(), uri.getLastPathSegment());
+                                file = FileUtils.parseImageFile(response, Utils.getImageFolder(), uri.getLastPathSegment());
                                 Utils.log("getImage Remote");
                             }
                         }
@@ -73,7 +71,7 @@ public class ImageCachedWebViewClient extends BaseWebViewClient {
                         return null;
                     }
 
-                    GlobalCache.getInstance().put(uri.toString(), file.getAbsolutePath());
+                    GlobalCache.getInstance().putPic(uri.toString(), file.getAbsolutePath());
 
                     return new WebResourceResponse("image/" + type, "", inputStream);
 
@@ -86,48 +84,9 @@ public class ImageCachedWebViewClient extends BaseWebViewClient {
     }
 
 
-    private File parseImageFile(Response response, File directory, String fileName) throws IOException {
-        InputStream is = null;
-        byte[] buf = new byte[2048];
-        int len = 0;
-        FileOutputStream fos = null;
-        try {
-            is = response.body().byteStream();
-            final long total = response.body().contentLength();
-
-            long sum = 0;
-
-            if (directory != null && !directory.exists()) {
-                directory.mkdirs();
-            }
-            File file = new File(directory, fileName);
-            fos = new FileOutputStream(file);
-            while ((len = is.read(buf)) != -1) {
-                sum += len;
-                fos.write(buf, 0, len);
-//                final long finalSum = sum;
-//                OkHttpUtils.getInstance().getDelivery().execute(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        inProgress(finalSum * 1.0f / total, total, id);
-//                    }
-//                });
-            }
-            fos.flush();
-
-            return file;
-
-        } finally {
-            response.body().close();
-            if (is != null) {
-                is.close();
-            }
-            if (fos != null) {
-                fos.close();
-            }
-
-        }
+    @Override
+    public void onPageFinished(WebView view, String url) {
+        int scrollY = GlobalCache.getInstance().getScrollPos(url);
+        view.scrollTo(0, scrollY);
     }
-
 }
