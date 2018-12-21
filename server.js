@@ -44,7 +44,7 @@ function process ( parsedUrl, res ){
   if( fs.existsSync(filePath) && parsedUrl.pathname != "/") {
     var fileContent = fs.readFileSync(filePath);
 
-    if( filePath.endsWith('.json') ) {
+    if( filePath.endsWith('.json') && query) {
       var obj = JSON.parse(fileContent);
       obj.params = query;
       fileContent = JSON.stringify(obj);
