@@ -4,7 +4,7 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-const hostname = '192.168.20.187';
+const hostname = '172.17.160.224';
 const httpPort = 3000;
 const httpsPort = 3001;
 

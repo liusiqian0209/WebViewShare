@@ -6,7 +6,7 @@ package cn.liusiqian.webviewdemo;
 public class Consts {
     public static final String TAG = "liusiqianjsdemo";
 
-    public static final String IP = "192.168.20.187";
+    public static final String IP = "172.17.160.224";
     public static final String HTTP_HOST = "http://"+IP+":3000/";
     public static final String HTTPS_HOST = "httpS://"+IP+":3001/";
 

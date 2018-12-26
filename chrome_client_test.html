@@ -46,7 +46,7 @@
         <button class="btn" onclick="onReqLocation()">请求位置</button>
         <button class="btn" onclick="onPrintLog()">输出Log</button>
     </div>
-    <img src="http://192.168.20.187:3000/pics/camera.jpg" width="220" height="220">
+    <img src="http://172.17.160.224:3000/pics/camera.jpg" width="220" height="220">
 
 
     <script type="text/javascript" >
@@ -93,8 +93,8 @@
                     document.getElementById("msg").innerHTML = "request Location error:" + result;
                 }, {
                     enableHighAccuracy: true,
-                    timeout: 3000,
-                    maximumAge: 3000
+                    timeout: 10000,
+                    maximumAge: 10000
                 });
             }
         }

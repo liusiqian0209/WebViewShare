@@ -42,7 +42,6 @@ public class ImageCachedWebViewClient extends BaseWebViewClient {
                     if (TextUtils.isEmpty(absPath)) {
                         //get from local
                         file = new File(Utils.getImageFolder(), uri.getLastPathSegment());
-                        Utils.log("getImage Local");
                         if (!file.exists()) {
                             //get from remote
                             Response response = OkHttpUtils.get().url(uri.toString()).build().execute();
@@ -50,6 +49,8 @@ public class ImageCachedWebViewClient extends BaseWebViewClient {
                                 file = FileUtils.parseImageFile(response, Utils.getImageFolder(), uri.getLastPathSegment());
                                 Utils.log("getImage Remote");
                             }
+                        } else {
+                            Utils.log("getImage Local");
                         }
                     } else {
                         file = new File(absPath);
